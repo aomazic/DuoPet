@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Automatic Feeder Interface</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Automatic Feeder Dashboard</h1>
+    </header>
+    <section id="status">
+      <p>Connection status: <span id="connectionStatus">Disconnected</span></p>
+    </section>
+    <section id="controls">
+      <input type="text" id="feedAmount" placeholder="Amount of food (g)">
+      <button id="feedButton">Feed Now</button>
+    </section>
+    <section id="log">
+      <h2>Activity Log</h2>
+      <div id="logEntries"></div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #eef;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .container {
+    width: 80%;
+    margin-top: 20px;
+  }
+  
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+  }
+  
+  #status {
+    margin: 10px 0;
+  }
+  
+  #controls {
+    margin: 10px 0;
+  }
+  
+  #feedButton {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #feedButton:hover {
+    background-color: #45a049;
+  }
+  
+  #log {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  
+  #logEntries {
+    height: 200px;
+    overflow-y: auto;
+  }
+  
