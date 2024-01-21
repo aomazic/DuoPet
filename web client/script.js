@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const feedAmount = document.getElementById('feedAmount');
     const logEntries = document.getElementById('logEntries');
     const connectionStatus = document.getElementById('connectionStatus');
+    const defaultAmountInput = document.getElementById('defaultAmount');
+    const setDefaultButton = document.getElementById('setDefaultButton');
   
     const ws = new WebSocket('ws://192.168.X.XXX:8888/ws');
   
@@ -19,6 +21,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
       message.textContent = event.data;
       logEntries.appendChild(message);
     };
+
+    setDefaultButton.addEventListener('click', function () {
+      const defaultAmount = defaultAmountInput.value;
+      if (defaultAmount) {
+        ws.send(JSON.stringify({ action: 'setDefault', amount: defaultAmount }));
+        defaultAmountInput.value = '';
+      } else {
+        alert('Please enter the default amount of food.');
+      }
+    });
   
     feedButton.addEventListener('click', function () {
       const amount = feedAmount.value;
