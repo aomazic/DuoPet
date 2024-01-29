@@ -7,11 +7,11 @@
 #define RST_PIN 16  // Define the RST_PIN for the RFID module
 
 // WiFi credentials
-const char* ssid = "your-ssid";
-const char* password = "your-password";
+const char* ssid = "bijeli";
+const char* password = "ferit.2023";
 
 // MQTT broker information
-const char* mqttServer = "rpi10";
+const char* mqttServer = "192.168.23.67";
 const int mqttPort = 1883;
 const char* mqttUser = "your-mqtt-username";
 const char* mqttPassword = "your-mqtt-password";
@@ -24,6 +24,7 @@ String dogCardUid = "70c5bf55";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+String pet ="";
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -85,17 +86,23 @@ void loop() {
     }
 
     if (cardUID == catCardUid) {
+      pet = "dog";
       Serial.println("0"); // Cat card detected
-      client.publish("rfid/status", "Cat card detected");
     } else if (cardUID == dogCardUid) {
+      pet = "cat";
       Serial.println("1"); // Dog card detected
-      client.publish("rfid/status", "Dog card detected");
     } else {
+      pet = "unknown";
       Serial.println("-1"); // Unknown card
-      client.publish("rfid/status", "Unknown card detected");
     }
 
     mfrc522.PICC_HaltA(); 
     mfrc522.PCD_StopCrypto1(); 
+  }
+
+  if (Serial.available() > 0) {
+    String isBowlFull = Serial.readStringUntil('\n');
+    String message = isBowlFull + ", " + pet;  // 
+    client.publish("duoPet/status", message.c_str());
   }
 }
