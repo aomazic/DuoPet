@@ -15,6 +15,7 @@ Servo catServo;
 Servo dogServo;
 
 bool servoEnabled = true;
+bool isBowlFullFlag = false;
 
 void setup() {
   Serial.begin(115200);
@@ -43,7 +44,13 @@ void loop() {
     digitalWrite(LED_BUILTIN, LOW);
   }
 
-  if (servoEnabled && Serial.available() > 0 && !isBowlFull(distanceBowl)) {
+   isBowlFullFlag = isBowlFull(distanceBowl);
+  if (servoEnabled && Serial.available() > 0 && !isBowlFullFlag) {
+    if (isBowlFullFlag) {
+        Serial.println("yes");
+      } else {
+        Serial.println("no");
+      }
     int servoCommand = Serial.parseInt();
     if (servoCommand == 1) {
       openServo(catServo);
