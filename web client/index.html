@@ -15,12 +15,19 @@
       <p>Connection status: <span id="connectionStatus">Disconnected</span></p>
     </section>
     <section id="controls">
-      <input type="text" id="feedAmount" placeholder="Amount of food (g)">
-      <button id="feedButton">Feed Now</button>
-      <input type="text" id="feedAmount" placeholder="Amount of food (g)">
-      <button id="feedButton">Feed Now</button>
+      <input type="text" id="dogFeedAmount" placeholder="Dog Food Amount (g)">
+      <button id="feedDogButton">Feed Dog</button>
+      
+      <input type="text" id="catFeedAmount" placeholder="Cat Food Amount (g)">
+      <button id="feedCatButton">Feed Cat</button>
+
       <input type="text" id="defaultAmount" placeholder="Default Amount (g)">
       <button id="setDefaultButton">Set Default Amount</button>
+    </section>
+    <section id="bowlStatus">
+      <h2>Bowl Status</h2>
+      <p>Dog Bowl Status: <span id="dogBowlStatus">N/A</span></p>
+      <p>Cat Bowl Status: <span id="catBowlStatus">N/A</span></p>
     </section>
     <section id="log">
       <h2>Activity Log</h2>
