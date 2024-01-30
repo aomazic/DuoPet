@@ -17,7 +17,7 @@
     <section id="controls">
       <input type="text" id="dogFeedAmount" placeholder="Dog Food Amount (g)">
       <button id="feedDogButton">Feed Dog</button>
-      
+
       <input type="text" id="catFeedAmount" placeholder="Cat Food Amount (g)">
       <button id="feedCatButton">Feed Cat</button>
 
@@ -31,7 +31,17 @@
     </section>
     <section id="log">
       <h2>Activity Log</h2>
-      <div id="logEntries"></div>
+      <table id="logEntries">
+        <thead>
+          <tr>
+            <th>Detection Time</th>
+            <th>Pet Type</th>
+            <th>Is Bowl Full?</th>
+          </tr>
+        </thead>
+        <tbody>
+          </tbody>
+      </table>
     </section>
   </div>
   <script src="script.js"></script>
