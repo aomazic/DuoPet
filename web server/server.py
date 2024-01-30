@@ -13,10 +13,16 @@ cursor = db.cursor()
 
 mqtt_broker = "192.168.23.67"
 mqtt_topic_detections = "duoPet/detections"
-mqtt_topic_status= "duoPet/status"
+mqtt_topic_status = "duoPet/status"
+mqtt_topic_controler = "duoPet/controler"
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("index.html")
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
+        # Allow any origin to connect (you might want to make this more restrictive in production)
         return True
 
     def open(self):
@@ -29,9 +35,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         if self in wss:
             wss.remove(self)
 
+    def on_message(self, message):
+        try:
+            publish_to_mqtt(mqtt_topic_controler, message)
+        except Exception as e:
+            print(f"Error processing WebSocket message: {e}")
+
+
 def on_message(client, userdata, msg):
     data = msg.payload.decode('utf-8')
-    
+
     # Check the MQTT topic and handle messages accordingly
     if msg.topic == mqtt_topic_detections:
         is_bowl_full, pet_type = data.split(',')
@@ -40,7 +53,6 @@ def on_message(client, userdata, msg):
         numbers = data.split(',')
         for client in wss:
             client.write_message(numbers)
-      
     else:
         print(f"Unknown topic: {msg.topic}")
 
@@ -65,6 +77,8 @@ def save_to_database(is_bowl_full, pet_type):
         db.rollback()
         print(f"Error saving data to database: {e}")
 
+def publish_to_mqtt(topic, message):
+    client.publish(topic, message)
 
 client = mqtt.Client()
 client.on_message = on_message
@@ -73,7 +87,10 @@ client.subscribe(mqtt_topic_detections)
 client.subscribe(mqtt_topic_status)
 client.loop_start()
 
-application = tornado.web.Application([(r'/ws', WSHandler),])
+application = tornado.web.Application([
+    (r'/', MainHandler),
+    (r'/ws', WSHandler),
+])
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
