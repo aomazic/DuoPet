@@ -24,11 +24,17 @@
       <input type="text" id="defaultAmount" placeholder="Default Amount (g)">
       <button id="setDefaultButton">Set Default Amount</button>
     </section>
+
     <section id="bowlStatus">
-      <h2>Bowl Status</h2>
-      <p>Dog Bowl Status: <span id="dogBowlStatus">N/A</span></p>
-      <p>Cat Bowl Status: <span id="catBowlStatus">N/A</span></p>
-    </section>
+     <h2>Bowl Status</h2>
+      <p>Dog Bowl Status: <span id="dogBowlStatusPercentage"></span>63%</p>
+      <div id="dogBowlProgressCircle" class="progress-circle"></div>
+
+      <p>Cat Bowl Status: <span id="catBowlStatusPercentage"></span>33%</p>
+      <div id="catBowlProgressCircle" class="progress-circle"></div>
+   </section>
+
+
     <section id="log">
       <h2>Activity Log</h2>
       <table id="logEntries">
