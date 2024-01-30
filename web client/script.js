@@ -35,14 +35,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   ws.onmessage = function (event) {
     const data = JSON.parse(event.data);
-
-    if (data.action === 'statusUpdate') {
-      dogBowlStatusSpan.textContent = `Level: ${data.dogBowlStatus} g`;
-      catBowlStatusSpan.textContent = `Level: ${data.catBowlStatus} g`;
-    } else {
-      const message = document.createElement('div');
-      message.textContent = event.data;
-      logEntries.appendChild(message);
+  
+    if (data.pet_type && data.is_bowl_full) {
+      const newRow = document.createElement('tr');
+  
+      const detectionTimeCell = document.createElement('td');
+      detectionTimeCell.textContent = data.detection_time;
+      newRow.appendChild(detectionTimeCell);
+  
+      const petTypeCell = document.createElement('td');
+      petTypeCell.textContent = data.pet_type;
+      newRow.appendChild(petTypeCell);
+  
+      const isBowlFullCell = document.createElement('td');
+      isBowlFullCell.textContent = data.is_bowl_full ? 'Yes' : 'No';
+      newRow.appendChild(isBowlFullCell);
+  
+      logEntries.appendChild(newRow);
     }
   };
 
