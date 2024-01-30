@@ -4,9 +4,13 @@
 #define ECHO_PIN_BOWL 11
 #define BOWL_FULL_THRESHOLD 10
 
-#define TRIG_PIN_STORAGE 8
-#define ECHO_PIN_STORAGE 9
-#define STORAGE_EMPTY_THRESHOLD 10
+#define TRIG_PIN_STORAGE1 8
+#define ECHO_PIN_STORAGE1 9
+#define STORAGE_EMPTY_THRESHOLD1 10
+
+#define TRIG_PIN_STORAGE2 2
+#define ECHO_PIN_STORAGE2 3
+#define STORAGE_EMPTY_THRESHOLD2 10
 
 #define CAT_SERVO_PIN 5
 #define DOG_SERVO_PIN_2 6
@@ -21,8 +25,10 @@ void setup() {
   Serial.begin(115200);
   pinMode(TRIG_PIN_BOWL, OUTPUT);
   pinMode(ECHO_PIN_BOWL, INPUT);
-  pinMode(TRIG_PIN_STORAGE, OUTPUT);
-  pinMode(ECHO_PIN_STORAGE, INPUT);
+  pinMode(TRIG_PIN_STORAGE1, OUTPUT);
+  pinMode(ECHO_PIN_STORAGE1, INPUT);
+  pinMode(TRIG_PIN_STORAGE2, OUTPUT);
+  pinMode(ECHO_PIN_STORAGE2, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
   catServo.attach(CAT_SERVO_PIN);
@@ -31,14 +37,17 @@ void setup() {
 
 void loop() {
   long distanceBowl = getSonarDistance(TRIG_PIN_BOWL, ECHO_PIN_BOWL);
-  long distanceStorage = getSonarDistance(TRIG_PIN_STORAGE, ECHO_PIN_STORAGE);
+  long distanceStorage1 = getSonarDistance(TRIG_PIN_STORAGE1, ECHO_PIN_STORAGE1);
+  long distanceStorage2 = getSonarDistance(TRIG_PIN_STORAGE2, ECHO_PIN_STORAGE2);
 
   Serial.print("Bowl Distance: ");
   Serial.print(distanceBowl);
-  Serial.print(" cm, Storage Distance: ");
-  Serial.println(distanceStorage);
+  Serial.print(" cm, Storage 1 Distance: ");
+  Serial.println(distanceStorage1);
+  Serial.print(" cm, Storage 2 Distance: ");
+  Serial.println(distanceStorage2);
 
-  if (isStorageEmpty(distanceStorage)) {
+  if (isStorageEmpty1(distanceStorage1) || isStorageEmpty2(distanceStorage2)) {
     digitalWrite(LED_BUILTIN, HIGH);
   } else {
     digitalWrite(LED_BUILTIN, LOW);
@@ -75,8 +84,12 @@ bool isBowlFull(long distance){
   return (distance < BOWL_FULL_THRESHOLD);
 }
 
-bool isStorageEmpty(long distance) {
-  return (distance < STORAGE_EMPTY_THRESHOLD);
+bool isStorageEmpty1(long distance) {
+  return (distance < STORAGE_EMPTY_THRESHOLD1);
+}
+
+bool isStorageEmpty2(long distance) {
+  return (distance < STORAGE_EMPTY_THRESHOLD2);
 }
 
 long getSonarDistance(int trigPin, int echoPin) {
