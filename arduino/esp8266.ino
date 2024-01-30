@@ -24,12 +24,12 @@ String dogCardUid = "70c5bf55";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String pet ="";
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
+
     delay(250);
     Serial.print(".");
   }
@@ -49,8 +49,16 @@ void setup() {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  // Handle MQTT messages if needed
+    if (strcmp(topic, "duoPet/controler") == 0) {
+    String data = "";
+    for (int i = 0; i < length; i++) {
+      data += char(payload[i]);
+    }
+    Serial.println(data);
+  }
 }
+
+
 
 void reconnect() {
   // Loop until we're reconnected to the MQTT broker
@@ -86,14 +94,12 @@ void loop() {
     }
 
     if (cardUID == catCardUid) {
-      pet = "dog";
-      Serial.println("0"); // Cat card detected
+      Serial.println("rfid : 0"); // Cat card detected
     } else if (cardUID == dogCardUid) {
-      pet = "cat";
-      Serial.println("1"); // Dog card detected
+      Serial.println("rfid : 1");
+       // Dog card detected
     } else {
-      pet = "unknown";
-      Serial.println("-1"); // Unknown card
+      Serial.println("rfid : -1");; // Unknown card
     }
 
     mfrc522.PICC_HaltA(); 
@@ -101,8 +107,18 @@ void loop() {
   }
 
   if (Serial.available() > 0) {
-    String isBowlFull = Serial.readStringUntil('\n');
-    String message = isBowlFull + ", " + pet;  // 
-    client.publish("duoPet/status", message.c_str());
+   // Read the entire line of data from the serial port
+    String receivedData = Serial.readStringUntil('\n');
+    // Extract the type and data from the received message
+    int index = receivedData.indexOf(':');
+    String type = receivedData.substring(0, index - 1);
+    String data = receivedData.substring(index + 2);
+    data.trim();
+    // Check the type and publish the data to the corresponding topic
+    if (type == "status") {
+      client.publish("duoPet/status", data.c_str());
+    } else if (type == "detection") {
+      client.publish("duoPet/detections", data.c_str());
+    }
   }
 }
