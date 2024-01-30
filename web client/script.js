@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const dogBowlStatusSpan = document.getElementById('dogBowlStatus');
   const catBowlStatusSpan = document.getElementById('catBowlStatus');
 
-  const ws = new WebSocket('ws://192.168.X.XXX:8888/ws');
+  const ws = new WebSocket('ws://192.168.23.67:8888/ws');
   const refreshInterval = 5000; // Postavite interval prema potrebi, npr. svakih 5000 milisekundi (5 sekundi)
 
   function checkStatusAutomatically() {
