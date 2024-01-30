@@ -4,6 +4,7 @@ import tornado.ioloop
 import tornado.web
 import MySQLdb as mdb
 import paho.mqtt.client as mqtt
+from datetime import datetime
 
 wss = []
 
@@ -45,14 +46,25 @@ def on_message(client, userdata, msg):
 
 def save_to_database(is_bowl_full, pet_type):
     try:
-        sql = "INSERT INTO petDetections (detection_time, pet_type, is_bowl_full) VALUES (NOW(), %s, %s)"
-        values = (pet_type, is_bowl_full)
+        detection_time = datetime.now()
+        sql = "INSERT INTO petDetections (detection_time, pet_type, is_bowl_full) VALUES (%s, %s, %s)"
+        values = (detection_time, pet_type, is_bowl_full)
         cursor.execute(sql, values)
         db.commit()
-        print("Data saved to database.")
+
+        # Broadcast the data to all connected WebSocket clients
+        for client in wss:
+            client.write_message({
+                "detection_time": detection_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "pet_type": pet_type,
+                "is_bowl_full": is_bowl_full
+            })
+
+        print("Data saved to database and broadcasted to WebSocket clients.")
     except Exception as e:
         db.rollback()
         print(f"Error saving data to database: {e}")
+
 
 client = mqtt.Client()
 client.on_message = on_message
