@@ -21,6 +21,9 @@ Servo dogServo;
 bool servoEnabled = true;
 bool isBowlFullFlag = false;
 
+unsigned long previousFeedTime = 0;
+unsigned long feedInterval = 3600000; // 1 hour
+
 void setup() {
   Serial.begin(115200);
   pinMode(TRIG_PIN_BOWL, OUTPUT);
@@ -40,12 +43,7 @@ void loop() {
   long distanceStorage1 = getSonarDistance(TRIG_PIN_STORAGE1, ECHO_PIN_STORAGE1);
   long distanceStorage2 = getSonarDistance(TRIG_PIN_STORAGE2, ECHO_PIN_STORAGE2);
 
-  Serial.print("Bowl Distance: ");
-  Serial.print(distanceBowl);
-  Serial.print(" cm, Storage 1 Distance: ");
-  Serial.println(distanceStorage1);
-  Serial.print(" cm, Storage 2 Distance: ");
-  Serial.println(distanceStorage2);
+  Serial.println("status : " + String(distanceStorage2) + "," + String(distanceStorage1) + "," + String(distanceBowl) + "\n");
 
   if (isStorageEmpty1(distanceStorage1) || isStorageEmpty2(distanceStorage2)) {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -53,24 +51,63 @@ void loop() {
     digitalWrite(LED_BUILTIN, LOW);
   }
 
-   isBowlFullFlag = isBowlFull(distanceBowl);
-  if (servoEnabled && Serial.available() > 0 && !isBowlFullFlag) {
-    if (isBowlFullFlag) {
-        Serial.println("yes");
-      } else {
-        Serial.println("no");
+  isBowlFullFlag = isBowlFull(distanceBowl);
+
+  if (Serial.available() > 0) {
+    String receivedData = Serial.readStringUntil('\n');
+    int index = receivedData.indexOf(':');
+    String type = receivedData.substring(0, index - 1);
+    String data = receivedData.substring(index + 2);
+    data.trim();
+
+    if (type == "rfid") {
+      if (data == "1") {
+        Serial.println("detection : " + String(isBowlFullFlag) + ", cat");
+        if (!isBowlFullFlag && servoEnabled)
+          openServo(catServo);
+      } else if (data == "0") {
+        Serial.println("detection : " + String(isBowlFullFlag) + ", dog");
+        if (!isBowlFullFlag && servoEnabled)
+          openServo(dogServo);
       }
-    int servoCommand = Serial.parseInt();
-    if (servoCommand == 1) {
-      openServo(catServo);
-    } else if (servoCommand == 0) {
-      openServo(dogServo);
+    } else if (type == "feed") {
+      // Example: data = "cat,40"
+      int commaIndex = data.indexOf(',');
+      String petType = data.substring(0, commaIndex);
+      String amountStr = data.substring(commaIndex + 1);
+      amountStr.trim();
+      int amount = amountStr.toInt();
+      
+      // Perform feeding based on pet type and amount
+      if (petType == "cat") {
+        feedPets(catServo, amount);
+      } else if (petType == "dog") {
+        feedPets(dogServo, amount);
+      }
+    } else if (type == "timeInterval") {
+      // Convert time interval data to milliseconds
+      int intervalMinutes = data.toInt();
+      feedInterval = intervalMinutes * 60 * 1000; // Convert minutes to milliseconds
     }
   }
 
   delay(1000);
 }
 
+void feedPets(Servo servo, int amount) {
+  servoEnabled = false;
+
+  // Adjust the servo angle and duration based on the amount
+  int angle = map(amount, 0, 100, 0, 180); // Map amount to servo angle (assuming 0-100% range)
+  int duration = map(amount, 0, 100, 500, 2000); // Map amount to servo duration (adjust as needed)
+
+  servo.write(angle);
+  delay(duration);
+  servo.write(0); // Return to the original position
+  servoEnabled = true;
+
+  Serial.println("Feeding: " + String(amount) + " grams");
+}
 
 void openServo(Servo servo) {
   servoEnabled = false;
@@ -80,7 +117,7 @@ void openServo(Servo servo) {
   servoEnabled = true;
 }
 
-bool isBowlFull(long distance){
+bool isBowlFull(long distance) {
   return (distance < BOWL_FULL_THRESHOLD);
 }
 
