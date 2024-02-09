@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="styles.css">
   <title>Automatic Feeder Interface</title>
 </head>
@@ -12,7 +13,8 @@
       <h1>Automatic Feeder Dashboard</h1>
     </header>
     <section id="status">
-      <p>Connection status: <span id="connectionStatus">Disconnected</span></p>
+      
+      <p>Connection status: <span id="connectionStatus"></span></p>
     </section>
     <section id="controls">
       <input type="text" id="dogFeedAmount" placeholder="Dog Food Amount (g)">
@@ -25,14 +27,24 @@
       <button id="setDefaultButton">Set Default Amount</button>
     </section>
 
-    <section id="bowlStatus">
-     <h2>Bowl Status</h2>
-      <p>Dog Bowl Status: <span id="dogBowlStatusPercentage"></span>63%</p>
-      <div id="dogBowlProgressCircle" class="progress-circle"></div>
-
-      <p>Cat Bowl Status: <span id="catBowlStatusPercentage"></span>33%</p>
-      <div id="catBowlProgressCircle" class="progress-circle"></div>
-   </section>
+    <section id="bowlStatus" class="w3-container">
+      <h2>Bowl Status</h2>
+    
+      <p>Cat Bowl Status: <span id="catBowlStatusPercentage"></span>%</p>
+      <div class="w3-border">
+        <div id="catBowlProgressBar" class="w3-green"></div>
+      </div>
+    
+      <p>Dog Bowl Status: <span id="dogBowlStatusPercentage"></span>%</p>
+      <div class="w3-border">
+        <div id="dogBowlProgressBar" class="w3-green"></div>
+      </div>
+    
+      <p>Bowl Storage Status: <span id="bowlStorageStatusPercentage"></span>%</p>
+      <div class="w3-border">
+        <div id="bowlStorageProgressBar" class="w3-green"></div>
+      </div>
+    </section>
 
 
     <section id="log">
@@ -46,6 +58,9 @@
           </tr>
         </thead>
         <tbody>
+        
+    
+       
           </tbody>
       </table>
     </section>
