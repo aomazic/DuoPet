@@ -7,23 +7,44 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const connectionStatus = document.getElementById('connectionStatus');
   const defaultAmountInput = document.getElementById('defaultAmount');
   const setDefaultButton = document.getElementById('setDefaultButton');
-  const dogBowlStatusSpan = document.getElementById('dogBowlStatus');
-  const catBowlStatusSpan = document.getElementById('catBowlStatus');
 
-  const ws = new WebSocket('ws://192.168.X.XXX:8888/ws');
-  const refreshInterval = 5000; // Postavite interval prema potrebi, npr. svakih 5000 milisekundi (5 sekundi)
+  const catBowlProgressBar = document.getElementById("catBowlProgressBar");
+  const dogBowlProgressBar = document.getElementById("dogBowlProgressBar");
+  const bowlStorageProgressBar = document.getElementById("bowlStorageProgressBar");
+
+  const catBowlStatusPercentage = document.getElementById("catBowlStatusPercentage");
+  const dogBowlStatusPercentage = document.getElementById("dogBowlStatusPercentage");
+  const bowlStorageStatusPercentage = document.getElementById("bowlStorageStatusPercentage");
+
+
+
+
+
+  const ws = new WebSocket('ws://192.168.23.67:8888/ws');
+  const refreshInterval = 5000; 
+
+
+
+  
+
+  
 
   function checkStatusAutomatically() {
     ws.send(JSON.stringify({ action: 'checkStatus' }));
   }
 
-  // Pozovi funkciju checkStatusAutomatically svakih refreshInterval milisekundi
-  const refreshIntervalId = setInterval(checkStatusAutomatically, refreshInterval);
 
-  // Event listener za zatvaranje stranice, kako bismo prekinuli interval kada korisnik napusti stranicu
-  window.addEventListener('beforeunload', function () {
-    clearInterval(refreshIntervalId);
-  });
+  function updateProgressBarWidth(progressBarElement, fillLevel) {
+    progressBarElement.style.width = `${100-(fillLevel/50) }%`;
+  }
+
+  
+
+
+  
+
+  
+ 
 
   ws.onopen = function () {
     connectionStatus.textContent = 'Connected';
@@ -32,6 +53,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   ws.onclose = function () {
     connectionStatus.textContent = 'Disconnected';
   };
+
 
   ws.onmessage = function (event) {
     const data = JSON.parse(event.data);
@@ -55,77 +77,59 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
   };
 
+
+
   setDefaultButton.addEventListener('click', function () {
     const defaultAmount = defaultAmountInput.value;
     if (defaultAmount) {
-      ws.send(JSON.stringify({ action: 'setDefault', amount: defaultAmount }));
+      ws.send(defaultAmount); 
       defaultAmountInput.value = '';
     } else {
       alert('Please enter the default amount of food.');
     }
   });
-
+  
   dogFeedButton.addEventListener('click', function () {
     const amount = dogFeedAmount.value;
     if (amount) {
-      ws.send(JSON.stringify({ action: 'feedDog', amount }));
+      ws.send(amount); 
       dogFeedAmount.value = '';
     } else {
       alert('Please enter the amount of dog food.');
     }
   });
-
+  
   catFeedButton.addEventListener('click', function () {
     const amount = catFeedAmount.value;
     if (amount) {
-      ws.send(JSON.stringify({ action: 'feedCat', amount }));
+      ws.send(amount); 
       catFeedAmount.value = '';
     } else {
       alert('Please enter the amount of cat food.');
     }
   });
-
-// Update bowl progress circles
-//const updateBowlProgress = () => {
- // if (ws.readyState === WebSocket.OPEN) {
-   // const receivedBowlStatusData = ws.receive().data.split(',');
-
-    //if (receivedBowlStatusData.length === 2) {
-      //const dogBowlFillLevel = parseFloat(receivedBowlStatusData[0]);
-      //const catBowlFillLevel = parseFloat(receivedBowlStatusData[1]);
-
-      //const dogBowlProgressCircle = document.getElementById('dogBowlProgressCircle');
-      //const dogBowlProgress = createProgressCircle(dogBowlFillLevel, 'dogBowlProgressCircle');
-      //dogBowlProgressCircle.replaceWith(dogBowlProgress);
-
-      //const catBowlProgressCircle = document.getElementById('catBowlProgressCircle');
-      //const catBowlProgress = createProgressCircle(catBowlFillLevel, 'catBowlProgressCircle');
-      //catBowlProgressCircle.replaceWith(catBowlProgress);
-    //}
-  //}
-//}; 
-// Update bowl progress circles
-// Update bowl progress circles
-// Update bowl progress circles
-
-
   
-const updateBowlProgress = () => {
-  const dogBowlFillLevel = 63;
-  const catBowlFillLevel = 33;
 
-  const dogBowlProgressCircle = document.getElementById('dogBowlProgressCircle');
-  const dogBowlProgress = createProgressCircle(dogBowlFillLevel, 'dogBowlProgressCircle');
-  dogBowlProgressCircle.replaceWith(dogBowlProgress);
 
-  const catBowlProgressCircle = document.getElementById('catBowlProgressCircle');
-  const catBowlProgress = createProgressCircle(catBowlFillLevel, 'catBowlProgressCircle');
-  catBowlProgressCircle.replaceWith(catBowlProgress);
-};
 
-// Update bowl status periodically
-setInterval(updateBowlProgress, 500);
+  if (ws.readyState === WebSocket.OPEN) {
+    const receivedBowlStatusData = ws.receive().data.split(',');
 
+    if (receivedBowlStatusData.length === 3) {
+      const dogBowlFillLevel = parseFloat(receivedBowlStatusData[0]);
+      const catBowlFillLevel = parseFloat(receivedBowlStatusData[1]);
+      const BowlFillLevel = parseFloat(receivedBowlStatusData[2]);
+ 
+      updateProgressBarWidth(catBowlProgressBar, catBowlFillLevel);
+      updateProgressBarWidth(dogBowlProgressBar, dogBowlFillLevel);
+      updateProgressBarWidth(bowlStorageProgressBar, BowlFillLevel); 
+
+      catBowlStatusPercentage.textContent = `${100-(catBowlFillLevel/50)}%`;
+      dogBowlStatusPercentage.textContent = `${100-(dogBowlFillLevel/50)}%`;
+      bowlStorageStatusPercentage.textContent = `${100-(bowlStorageFillLevel/50)}%`;
+  
+    }
+  }
 
 
 
