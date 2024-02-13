@@ -124,9 +124,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
       updateProgressBarWidth(dogBowlProgressBar, dogBowlFillLevel);
       updateProgressBarWidth(bowlStorageProgressBar, BowlFillLevel); 
 
-      catBowlStatusPercentage.textContent = `${100-(catBowlFillLevel/50)}%`;
-      dogBowlStatusPercentage.textContent = `${100-(dogBowlFillLevel/50)}%`;
-      bowlStorageStatusPercentage.textContent = `${100-(bowlStorageFillLevel/50)}%`;
+      catBowlStatusPercentage.textContent = `${100-100*(catBowlFillLevel/50)}%`;
+      dogBowlStatusPercentage.textContent = `${100-100*(dogBowlFillLevel/50)}%`;
+      bowlStorageStatusPercentage.textContent = `${100-100*(bowlStorageFillLevel/50)}%`;
   
     }
   }
